@@ -3,23 +3,27 @@ const Schema = mongoose.Schema;
 
 const UserSchema = new Schema({
     username: {
-        type: 'string',
-        required: true
+        type: String,
+        required: true,
+        unique: true, 
+        trim: true
     },
     email: {
-        type: 'string',
-        required: true
+        type: String,
+        required: true,
+        unique: true
     },
     password: {
-        type: 'string',
-        required: true
+        type: String,
+        required: true,
+        select: false
     },
-    date: {
+    createdAt: {
         type: Date,
         default: Date.now   
     },
     trips: {
-        type: 'array'
+        type: Array
     }
 });
 
