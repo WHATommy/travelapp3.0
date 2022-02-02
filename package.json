@@ -21,8 +21,11 @@
   },
   "homepage": "https://github.com/WHATommy/travelapp3.0#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "dotenv": "^15.0.0",
     "express": "^4.17.2",
+    "express-validator": "^6.14.0",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.9",
     "next": "^12.0.9",
     "react": "^17.0.2",
