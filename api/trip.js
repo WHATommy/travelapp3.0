@@ -5,7 +5,6 @@ const User = require("../models/UserModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
 
-
 // Route    POST api/trip
 // Desc     Create a trip for a user
 // Access   Private
@@ -66,6 +65,29 @@ Router.post(
             return res.status(500).send("Server error");
         }
     } 
+)
+
+// Route    GET api/trip/:tripId
+// Desc     Retrieve a trip's information
+// Access   Private
+Router.get(
+    "/:tripId",
+    authMiddleware,
+
+    async(req, res) => {
+        try {
+            const trip = await Trip.findById(req.params.tripId);
+
+            if(!trip) {
+                return res.status(404).send("The trip does not exist");
+            }
+
+            return res.status(200).json(trip);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+    }
 )
 
 module.exports = Router;
