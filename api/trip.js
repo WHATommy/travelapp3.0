@@ -67,6 +67,7 @@ Router.post(
     } 
 )
 
+
 // Route    GET api/trip/:tripId
 // Desc     Retrieve a trip's information
 // Access   Private
@@ -89,5 +90,7 @@ Router.get(
         }
     }
 )
+
+
 
 module.exports = Router;
