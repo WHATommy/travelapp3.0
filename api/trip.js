@@ -178,6 +178,7 @@ Router.put(
     }
 )
 
+
 // Route    PUT api/trip
 // Desc     Delete a trip
 // Access   Private
