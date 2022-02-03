@@ -164,20 +164,20 @@ const TripSchema = new Schema({
     endTime: {
         type: String
     },
-    eventList: {
+    events: {
         type: [EventSchema]
     },
-    restaurantList: {
+    restaurants: {
         type: [RestaurantSchema]
     },
-    housingList: {
+    housings: {
         type: [HousingSchema]
     },
-    attendeeList: {
+    attendees: {
         type: [AttendeeSchema]
     }
 });
 
 const Trip = mongoose.model('trips', TripSchema);
 
-module.exports = { Trip };
+module.exports = Trip;
