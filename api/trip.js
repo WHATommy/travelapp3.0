@@ -90,4 +90,33 @@ Router.get(
     }
 )
 
+// Route    GET api/trip
+// Desc     Retrieve all of the user's trips
+// Access   Private
+Router.get(
+    "/",
+    authMiddleware,
+
+    async(req, res) => {
+        try {
+            // Find the user inside the database
+            const user = await User.findById(req.user);
+
+            // User does not exist
+            if(!user) {
+                return res.status(404).send("User does not exist");
+            };
+
+            // Find each of the trip's infomation in the user's trips list
+            const userTrips = await Trip.find( { _id: { $in: user.trips } } );
+            
+            return res.status(200).json(userTrips)
+            
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+    }
+)
+
 module.exports = Router;
