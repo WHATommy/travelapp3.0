@@ -178,4 +178,43 @@ Router.put(
     }
 )
 
+// Route    PUT api/trip
+// Desc     Delete a trip
+// Access   Private
+Router.delete(
+    "/:tripId",
+    authMiddleware,
+
+    async(req, res) => {
+        try {
+            // Find the user inside the database
+            let trip = await Trip.findById(req.params.tripId);
+
+            // User does not exist
+            if(!trip) {
+                return res.status(404).send("The trip does not exist");
+            };
+
+            // Remove the trip id from the owner's and attendee's trips list
+            const users = [trip.owner, ...trip.attendees];
+            await users.map(userId => {
+                User.findById(userId)
+                .then(user => {
+                    user.trips = user.trips.filter(userTrip => userTrip._id.valueOf() != trip._id.valueOf());
+                    user.save();
+                });
+            });
+
+            // Remove the trip from the database
+            await trip.remove()
+            
+            return res.status(200).json("Trip has been removed");
+            
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+    }
+)
+
 module.exports = Router;
