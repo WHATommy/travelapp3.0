@@ -178,6 +178,9 @@ const TripSchema = new Schema({
     }
 });
 
+const Housing = mongoose.model('Housing', HousingSchema);
+const Restaurant = mongoose.model('restaurant', RestaurantSchema);
+const Event = mongoose.model('events', EventSchema);
 const Trip = mongoose.model('trips', TripSchema);
 
-module.exports = Trip;
+module.exports = { Trip, Event, Restaurant, Housing };
