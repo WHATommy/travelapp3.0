@@ -116,4 +116,59 @@ Router.get(
     }
 )
 
+// Route    PUT api/trip
+// Desc     Update a event
+// Access   Private
+Router.put(
+    "/:tripId/:eventId",
+    authMiddleware,
+
+    async(req, res) => {
+        // Store request values into callable variables
+        const {
+            name,
+            location,
+            startDate,
+            endDate,
+            checkInTime,
+            checkOutTime,
+            cost,
+            description,
+            phoneNumber,
+            websiteUrl
+        } = req.body;
+
+        try {
+            // Retrieve a event by ID
+            let event = await Event.findById(req.params.eventId);
+
+            // Check if event exist in the database
+            if (!event) {
+                return res.status(404).send("Event does not exist");
+            }
+
+            // Update the event structure
+            name ? event.name = name : null;
+            location ? event.location = location : null;
+            startDate ? event.startDate = startDate : null;
+            endDate ? event.endDate = endDate : null;
+            checkInTime ? event.checkInTime = checkInTime : null;
+            checkOutTime ? event.checkOutTime = checkOutTime : null;
+            cost ? event.cost = cost : null;
+            description ? event.description = description : null;
+            phoneNumber ? event.phoneNumber = phoneNumber : null;
+            websiteUrl ? event.websiteUrl = websiteUrl : null;
+
+            // Save the event
+            await event.save();
+
+            return res.status(200).json(event);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+        
+    }
+)
+
 module.exports = Router;
