@@ -164,18 +164,26 @@ const TripSchema = new Schema({
     endTime: {
         type: String
     },
-    events: {
-        type: [EventSchema]
-    },
-    restaurants: {
-        type: [RestaurantSchema]
-    },
-    housings: {
-        type: [HousingSchema]
-    },
-    attendees: {
-        type: [AttendeeSchema]
-    }
+    events: [
+        {
+            type: Schema.Types.ObjectId
+        }
+    ],
+    restaurants: [
+        {
+            type: Schema.Types.ObjectId
+        }
+    ],
+    housings: [
+        {
+            type: Schema.Types.ObjectId
+        }
+    ],
+    attendees: [
+        {
+            type: Schema.Types.ObjectId
+        }
+    ]
 });
 
 const Housing = mongoose.model('Housing', HousingSchema);

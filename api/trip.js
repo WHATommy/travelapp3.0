@@ -1,6 +1,6 @@
 const express = require("express");
 const Router = express.Router();
-const Trip = require("../models/TripModel");
+const { Trip } = require("../models/TripModel");
 const User = require("../models/UserModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
@@ -165,6 +165,7 @@ Router.put(
             housing ? trip.housing = housing : null
             attendees ? trip.attendees = attendees : null
 
+            console.log(trip)
 
             // Save the trip in the 'trip' collection and the trip id into the user's list of trips
             await trip.save();
