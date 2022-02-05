@@ -1,6 +1,7 @@
 const express = require("express");
 const Router = express.Router();
-const { Trip, Event } = require("../models/TripModel");
+const Trip = require("../models/TripModel");
+const Event = require("../models/EventModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
 const axios = require("axios");
