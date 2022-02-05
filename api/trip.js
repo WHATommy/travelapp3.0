@@ -180,7 +180,7 @@ Router.put(
 )
 
 
-// Route    PUT api/trip
+// Route    DELETE api/trip
 // Desc     Delete a trip
 // Access   Private
 Router.delete(
