@@ -8,8 +8,8 @@ const baseUrl = require("../utilsServer/baseUrl");
 
 Router.post(
     "/:tripId",
-    check("name", "The name of the trip is required").notEmpty(),
-    check("location", "The location is required").notEmpty(),
+    check("name", "The name of the event is required").notEmpty(),
+    check("location", "The location of the event is required").notEmpty(),
     check("startDate", "The start date is required").notEmpty(),
     check("endDate", "The end date is required").notEmpty(),
     check("checkInTime", "The check in time is required").notEmpty(),
@@ -57,15 +57,13 @@ Router.post(
                 phoneNumber,
                 websiteUrl
             });
-            let eventList = trip.events;
 
             // Save the event in the 'event' collection and the event id into the trip's list of events
             await newEvent.save().then(event => {
-                eventList.unshift(event._id);
+                trip.events.unshift(event._id);
             });
 
-            const token = req.header("auth-token");
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: eventList }, { headers: { "auth-token": token } });
+            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).json(newEvent);
         } catch (err) {
