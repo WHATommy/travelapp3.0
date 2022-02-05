@@ -42,7 +42,7 @@ const TripSchema = new Schema({
     ],
     attendees: [
         {
-                type: Schema.Types.ObjectId
+            type: Schema.Types.ObjectId
         }
     ]
 });
