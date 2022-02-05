@@ -1,8 +1,10 @@
 const express = require("express");
 const Router = express.Router();
-const {Trip, Event} = require("../models/TripModel");
+const { Trip, Event } = require("../models/TripModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
+const axios = require("axios");
+const baseUrl = require("../utilsServer/baseUrl");
 
 Router.post(
     "/:tripId",
@@ -12,6 +14,7 @@ Router.post(
     check("endDate", "The end date is required").notEmpty(),
     check("checkInTime", "The check in time is required").notEmpty(),
     check("checkOutTime", "The check out time is required").notEmpty(),
+    authMiddleware,
 
     async (req, res) => {
         // Check if there are any invalid inputs
@@ -54,13 +57,17 @@ Router.post(
                 phoneNumber,
                 websiteUrl
             });
+            let eventList = trip.events;
 
             // Save the event in the 'event' collection and the event id into the trip's list of events
             await newEvent.save().then(event => {
-                trip.events.unshift(event);
-                trip.save().then(res.status(200).json(trip));
+                eventList.unshift(event._id);
             });
 
+            const token = req.header("auth-token");
+            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: eventList }, { headers: { "auth-token": token } });
+
+            return res.status(200).json(newEvent);
         } catch (err) {
             console.log(err);
             return res.status(500).send("Server error");
