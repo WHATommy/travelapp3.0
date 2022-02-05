@@ -42,7 +42,15 @@ const TripSchema = new Schema({
     ],
     attendees: [
         {
-            type: Schema.Types.ObjectId
+            _id: {
+                type: Schema.Types.ObjectId
+            },
+            moderator: {
+                type: Boolean
+            },
+            attending: {
+                type: Boolean
+            }
         }
     ]
 });
