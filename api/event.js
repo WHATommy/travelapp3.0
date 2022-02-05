@@ -6,6 +6,9 @@ const authMiddleware = require("../middleware/authMiddleware");
 const axios = require("axios");
 const baseUrl = require("../utilsServer/baseUrl");
 
+// Route    GET api/event
+// Desc     Create a event for a trip
+// Access   Private
 Router.post(
     "/:tripId",
     check("name", "The name of the event is required").notEmpty(),
@@ -63,6 +66,7 @@ Router.post(
                 trip.events.unshift(event._id);
             });
 
+            // Route to the trip api to update the trip's event list
             await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).json(newEvent);
