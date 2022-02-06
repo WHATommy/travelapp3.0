@@ -171,6 +171,47 @@ Router.put(
             console.log(err);
             return res.status(500).send("Server error");
         }
+        
+    }
+)
+
+// Route    DELETE api/trip
+// Desc     Remove a event
+// Access   Private
+Router.delete(
+    "/:tripId/:eventId",
+    authMiddleware,
+
+    async(req, res) => {
+        try {
+            // Find a trip inside the database
+            const trip = await Trip.findById(req.params.tripId);
+            if(!trip) {
+                return res.status(404).send("Trip does not exist");
+            }
+
+            // Find a event inside the database
+            const event = await Event.findById(req.params.eventId);
+            if(!event) {
+                return res.status(404).send("Event does not exist");
+            }
+            console.log(event._id)
+            trip.events = trip.events.filter(eventId => eventId.valueOf() !== event._id.valueOf());
+            console.log(trip.events)
+            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
+
+            await event.remove();
+
+            return res.status(200).send("Event has been removed");
+
+
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+
+
+        return res.status(200).json(event);
 
     }
 )
