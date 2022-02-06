@@ -83,19 +83,16 @@ Router.get(
     authMiddleware,
 
     async(req, res) => {
-        try {
-            // Find a event inside the database
-            const event = await Event.findById(req.params.eventId);
 
-            if(!event) {
-                return res.status(404).send("Event does not exist");
-            }
+        // Find a event inside the database
+        const event = await Event.findById(req.params.eventId);
 
-            return res.status(200).json(event);
-        } catch (err) {
-            console.log(err);
-            return res.status(500).send("Server error");
+        if(!event) {
+            return res.status(404).send("Event does not exist");
         }
+
+        return res.status(200).json(event);
+
     }
 )
 
@@ -107,22 +104,74 @@ Router.get(
     authMiddleware,
 
     async(req, res) => {
+
+        // Find the trip inside the database
+        const trip = await Trip.findById(req.params.tripId);
+        
+        if(!trip) {
+            return res.status(404).send("Trip does not exist");
+        }
+
+        // Find each of the trip's infomation in the user's trips list
+        const tripEvents = await Event.find( { _id: { $in: trip.events } } );
+
+        return res.status(200).json(tripEvents);
+    }
+)
+
+// Route    PUT api/trip
+// Desc     Update a event
+// Access   Private
+Router.put(
+    "/:tripId/:eventId",
+    authMiddleware,
+
+    async(req, res) => {
+        // Store request values into callable variables
+        const {
+            name,
+            location,
+            startDate,
+            endDate,
+            checkInTime,
+            checkOutTime,
+            cost,
+            description,
+            phoneNumber,
+            websiteUrl
+        } = req.body;
+
         try {
-            // Find the trip inside the database
-            const trip = await Trip.findById(req.params.tripId);
-            
-            if(!trip) {
-                return res.status(404).send("Trip does not exist");
+            // Retrieve a event by ID
+            let event = await Event.findById(req.params.eventId);
+
+            // Check if event exist in the database
+            if (!event) {
+                return res.status(404).send("Event does not exist");
             }
 
-            // Find each of the trip's infomation in the user's trips list
-            const tripEvents = await Event.find( { _id: { $in: trip.events } } );
+            // Update the event structure
+            name ? event.name = name : null;
+            location ? event.location = location : null;
+            startDate ? event.startDate = startDate : null;
+            endDate ? event.endDate = endDate : null;
+            checkInTime ? event.checkInTime = checkInTime : null;
+            checkOutTime ? event.checkOutTime = checkOutTime : null;
+            cost ? event.cost = cost : null;
+            description ? event.description = description : null;
+            phoneNumber ? event.phoneNumber = phoneNumber : null;
+            websiteUrl ? event.websiteUrl = websiteUrl : null;
 
-            return res.status(200).json(tripEvents);
+            // Save the event
+            await event.save();
+
+            return res.status(200).json(event);
+
         } catch (err) {
             console.log(err);
             return res.status(500).send("Server error");
         }
+
     }
 )
 
