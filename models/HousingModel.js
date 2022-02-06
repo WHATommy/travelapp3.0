@@ -31,9 +31,6 @@ const HousingSchema = new Schema({
     },
     websiteUrl: {
         type: String
-    }, 
-    attendees: {
-        type: Array
     }
 });
 
