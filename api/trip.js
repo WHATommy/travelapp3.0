@@ -50,7 +50,7 @@ Router.post(
                 endTime,
                 events: [],
                 restaurants: [],
-                housing: [],
+                housings: [],
                 attendees: []
             });
 
@@ -139,7 +139,7 @@ Router.put(
             endTime,
             events,
             restaurants,
-            housing,
+            housings,
             attendees
         } = req.body;
 
@@ -162,10 +162,8 @@ Router.put(
             endTime ? trip.endTime = endTime : null
             events ? trip.events = events : null
             restaurants ? trip.restaurants = restaurants : null
-            housing ? trip.housing = housing : null
+            housings ? trip.housings = housings : null
             attendees ? trip.attendees = attendees : null
-
-            console.log(trip)
 
             // Save the trip in the 'trip' collection and the trip id into the user's list of trips
             await trip.save();
