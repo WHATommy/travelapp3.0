@@ -75,4 +75,55 @@ Router.post(
     }
 )
 
+// Route    GET api/trip
+// Desc     Retrieve information about a event of a trip
+// Access   Private
+Router.get(
+    "/:tripId/:eventId",
+    authMiddleware,
+
+    async(req, res) => {
+        try {
+            // Find a event inside the database
+            const event = await Event.findById(req.params.eventId);
+
+            if(!event) {
+                return res.status(404).send("Event does not exist");
+            }
+
+            return res.status(200).json(event);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+    }
+)
+
+// Route    GET api/trip
+// Desc     Retrieve all of the trip's events
+// Access   Private
+Router.get(
+    "/:tripId",
+    authMiddleware,
+
+    async(req, res) => {
+        try {
+            // Find the trip inside the database
+            const trip = await Trip.findById(req.params.tripId);
+            
+            if(!trip) {
+                return res.status(404).send("Trip does not exist");
+            }
+
+            // Find each of the trip's infomation in the user's trips list
+            const tripEvents = await Event.find( { _id: { $in: trip.events } } );
+
+            return res.status(200).json(tripEvents);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).send("Server error");
+        }
+    }
+)
+
 module.exports = Router;
