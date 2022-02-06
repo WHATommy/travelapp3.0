@@ -6,9 +6,6 @@ const RestaurantSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'trips'
     },
-    user: {
-        type: String
-    },
     name: {
         type: String,
         required: true
@@ -41,7 +38,7 @@ const RestaurantSchema = new Schema({
     websiteUrl: {
         type: String
     },
-    img_url: {
+    imgUrl: {
         type: Array
     }
 });

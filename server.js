@@ -14,6 +14,7 @@ nextApp.prepare()
 .then(() => {
     app.use("/api/housing", require("./api/housing"));
     app.use("/api/event", require("./api/event"));
+    app.use("/api/restaurant", require("./api/restaurant"));
     app.use("/api/auth", require("./api/auth"));
     app.use("/api/signup", require("./api/signup"));
     app.use("/api/trip", require("./api/trip"));
