@@ -196,23 +196,19 @@ Router.delete(
             if(!event) {
                 return res.status(404).send("Event does not exist");
             }
-            console.log(event._id)
+
             trip.events = trip.events.filter(eventId => eventId.valueOf() !== event._id.valueOf());
-            console.log(trip.events)
+
             await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
 
             await event.remove();
 
             return res.status(200).send("Event has been removed");
 
-
         } catch (err) {
             console.log(err);
             return res.status(500).send("Server error");
         }
-
-
-        return res.status(200).json(event);
 
     }
 )
