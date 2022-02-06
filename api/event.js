@@ -83,6 +83,7 @@ Router.get(
     authMiddleware,
 
     async(req, res) => {
+
         // Find a event inside the database
         const event = await Event.findById(req.params.eventId);
 
@@ -91,6 +92,7 @@ Router.get(
         }
 
         return res.status(200).json(event);
+
     }
 )
 
@@ -102,6 +104,7 @@ Router.get(
     authMiddleware,
 
     async(req, res) => {
+
         // Find the trip inside the database
         const trip = await Trip.findById(req.params.tripId);
         
@@ -163,6 +166,7 @@ Router.put(
             await event.save();
 
             return res.status(200).json(event);
+
         } catch (err) {
             console.log(err);
             return res.status(500).send("Server error");
@@ -200,12 +204,15 @@ Router.delete(
 
             return res.status(200).send("Event has been removed");
 
+
         } catch (err) {
             console.log(err);
             return res.status(500).send("Server error");
         }
 
+
         return res.status(200).json(event);
+
     }
 )
 
