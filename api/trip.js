@@ -142,7 +142,8 @@ Router.put(
             events,
             restaurants,
             housings,
-            attendees
+            attendees,
+            pendingUsers
         } = req.body;
 
         try {
@@ -166,6 +167,7 @@ Router.put(
             restaurants ? trip.restaurants = restaurants : null
             housings ? trip.housings = housings : null
             attendees ? trip.attendees = attendees : null
+            pendingUsers ? trip.pendingUsers = pendingUsers : null
 
             // Save the trip in the 'trip' collection and the trip id into the user's list of trips
             await trip.save();

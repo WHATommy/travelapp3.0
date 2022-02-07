@@ -22,9 +22,20 @@ const UserSchema = new Schema({
         type: Date,
         default: Date.now   
     },
-    trips: {
-        type: Array
-    }
+    trips: [
+        {
+            _id: {
+                type: Schema.Types.ObjectId
+            }
+        }
+    ],
+    invitations: [
+        {
+            _id: {
+                type: Schema.Types.ObjectId
+            }
+        }
+    ]
 });
 
 const User = mongoose.model('users', UserSchema);
