@@ -38,7 +38,7 @@ Router.post(
 
             // Create a token for the user using JWT
             const payload = { userId: user._id };
-            jwt.sign(payload, process.env.jwtSecret, {expiresIn: "1d"}, (err, token) => {
+            jwt.sign(payload, process.env.jwtSecret, {expiresIn: "7d"}, (err, token) => {
                 if (err) throw err;
                 res.status(200).json(token);
             });
