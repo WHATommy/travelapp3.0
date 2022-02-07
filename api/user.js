@@ -59,11 +59,14 @@ Router.put(
             email,
             password,
             trips,
+
             invitations
+
         } = req.body;
 
         try {
             // Retrieve a user by ID
+
             let user = await User.findById(req.params.userId);
 
             // Check if user exist in the database
@@ -76,6 +79,7 @@ Router.put(
             email ? user.email = email : null;
             password ? user.password = password : null;
             trips ? user.trips = trips : null;
+
             invitations ? user.invitations = invitations : null;
 
             // Save the user
