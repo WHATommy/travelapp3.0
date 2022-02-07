@@ -49,7 +49,7 @@ Router.get(
 // Desc     Update a user
 // Access   Private
 Router.put(
-    "/",
+    "/:userId",
     authMiddleware,
 
     async(req, res) => {
@@ -59,12 +59,12 @@ Router.put(
             email,
             password,
             trips,
-            invitation
+            invitations
         } = req.body;
 
         try {
             // Retrieve a user by ID
-            let user = await User.findById(req.user);
+            let user = await User.findById(req.params.userId);
 
             // Check if user exist in the database
             if (!user) {
@@ -76,7 +76,7 @@ Router.put(
             email ? user.email = email : null;
             password ? user.password = password : null;
             trips ? user.trips = trips : null;
-            invitation ? user.invitation = invitation : null;
+            invitations ? user.invitations = invitations : null;
 
             // Save the user
             await user.save();

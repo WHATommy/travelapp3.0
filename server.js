@@ -19,6 +19,7 @@ nextApp.prepare()
     app.use("/api/auth", require("./api/auth"));
     app.use("/api/signup", require("./api/signup"));
     app.use("/api/trip", require("./api/trip"));
+    app.use("/api/invitation", require("./api/invitation"));
     app.all("*", (req, res) => handle(req, res));
 
     server.listen(PORT, err => {

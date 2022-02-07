@@ -47,9 +47,13 @@ const TripSchema = new Schema({
             },
             moderator: {
                 type: Boolean
-            },
-            attending: {
-                type: Boolean
+            }
+        }
+    ],
+    pendingUsers: [
+        {
+            _id: {
+                type: Schema.Types.ObjectId
             }
         }
     ]
