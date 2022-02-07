@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 
 nextApp.prepare()
 .then(() => {
+    app.use("/api/user", require("./api/user"));
     app.use("/api/housing", require("./api/housing"));
     app.use("/api/event", require("./api/event"));
     app.use("/api/restaurant", require("./api/restaurant"));

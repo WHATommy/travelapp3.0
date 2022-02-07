@@ -4,6 +4,8 @@ const Trip = require("../models/TripModel");
 const User = require("../models/UserModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
+const axios = require("axios");
+const baseUrl = require("../utilsServer/baseUrl");
 
 // Route    POST api/trip
 // Desc     Create a trip for a user
@@ -198,12 +200,16 @@ Router.delete(
             // Remove the trip id from the owner's and attendee's trips list
             const users = [trip.owner, ...trip.attendees];
             await users.map(userId => {
+                let userTrips;
                 User.findById(userId)
                 .then(user => {
-                    user.trips = user.trips.filter(userTrip => userTrip._id.valueOf() != trip._id.valueOf());
-                    user.save();
-                });
+                    userTrips = user.trips.filter(userTrip => userTrip._id.valueOf() != trip._id.valueOf());
+                })
+                .then(() => {
+                    axios.put(`${baseUrl}/api/user/${userId}`, { trips: userTrips }, { headers: { "auth-token": req.header("auth-token") } });
+                })
             });
+
 
             // Remove the trip from the database
             await trip.remove()
