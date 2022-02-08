@@ -28,13 +28,13 @@ Router.get(
 // Desc     Retrieve information about a user
 // Access   Private
 Router.get(
-    "/:userId",
+    "/retrieve",
     authMiddleware,
 
     async(req, res) => {
 
         // Find a user inside the database
-        const user = await User.findById(req.params.userId);
+        const user = await User.findById(req.body.userId);
 
         if(!user) {
             return res.status(404).send("User does not exist");
@@ -49,25 +49,24 @@ Router.get(
 // Desc     Update a user
 // Access   Private
 Router.put(
-    "/:userId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
         // Store request values into callable variables
         const {
+            userId,
             username,
             email,
             password,
             trips,
-
             invitations
 
         } = req.body;
 
         try {
             // Retrieve a user by ID
-
-            let user = await User.findById(req.params.userId);
+            let user = await User.findById(userId);
 
             // Check if user exist in the database
             if (!user) {
@@ -99,13 +98,13 @@ Router.put(
 // Desc     Remove a user
 // Access   Private
 Router.delete(
-    "/:userId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
         try {
             // Find a user inside the database
-            const user = await User.findById(req.params.userId);
+            const user = await User.findById(req.params.user);
             if(!user) {
                 return res.status(404).send("User does not exist");
             }

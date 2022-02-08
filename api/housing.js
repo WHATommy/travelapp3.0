@@ -60,7 +60,7 @@ Router.post(
                 trip.housings.unshift(housing._id);
             });
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId: trip._id, housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).json(newHousing);
         } catch (err) {
@@ -185,7 +185,7 @@ Router.delete(
 
             trip.housings = trip.housings.filter(housingId => housingId.valueOf() !== housing._id.valueOf());
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId: trip._id, housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
 
             await housing.remove();
 

@@ -61,7 +61,7 @@ Router.post(
                 trip.restaurants.unshift(restaurant._id);
             });
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { restaurants: trip.restaurants }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId: trip._id, restaurants: trip.restaurants }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).json(newRestaurant);
         } catch (err) {
@@ -192,7 +192,7 @@ Router.delete(
 
             trip.restaurants = trip.restaurants.filter(restaurantId => restaurantId.valueOf() !== restaurant._id.valueOf());
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { restaurants: trip.restaurants }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId: trip._id, restaurants: trip.restaurants }, { headers: { "auth-token": req.header("auth-token") } });
 
             await restaurant.remove();
 

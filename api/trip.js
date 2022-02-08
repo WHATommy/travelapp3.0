@@ -73,12 +73,12 @@ Router.post(
 // Desc     Retrieve a trip's information
 // Access   Private
 Router.get(
-    "/:tripId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
         try {
-            const trip = await Trip.findById(req.params.tripId);
+            const trip = await Trip.findById(req.body.tripId);
 
             if(!trip) {
                 return res.status(404).send("The trip does not exist");
@@ -125,13 +125,14 @@ Router.get(
 // Desc     Update a trip's information
 // Access   Private
 Router.put(
-    "/:tripId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
 
         // Store request values into callable variables
         const {
+            tripId,
             owner,
             name,
             location,
@@ -148,7 +149,7 @@ Router.put(
 
         try {
             // Find the user inside the database
-            let trip = await Trip.findById(req.params.tripId);
+            let trip = await Trip.findById(tripId);
 
             // User does not exist
             if(!trip) {
@@ -186,13 +187,13 @@ Router.put(
 // Desc     Delete a trip
 // Access   Private
 Router.delete(
-    "/:tripId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
         try {
             // Find the user inside the database
-            let trip = await Trip.findById(req.params.tripId);
+            let trip = await Trip.findById(req.body.tripId);
 
             // User does not exist
             if(!trip) {
@@ -208,7 +209,7 @@ Router.delete(
                     userTrips = user.trips.filter(userTrip => userTrip._id.valueOf() != trip._id.valueOf());
                 })
                 .then(() => {
-                    axios.put(`${baseUrl}/api/user/${userId}`, { trips: userTrips }, { headers: { "auth-token": req.header("auth-token") } });
+                    axios.put(`${baseUrl}/api/user`, { userId, trips: userTrips }, { headers: { "auth-token": req.header("auth-token") } });
                 })
             });
 
