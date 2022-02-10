@@ -28,13 +28,13 @@ Router.get(
 // Desc     Retrieve information about a user
 // Access   Private
 Router.get(
-    "/:userId",
+    "/info",
     authMiddleware,
 
     async(req, res) => {
 
         // Find a user inside the database
-        const user = await User.findById(req.params.userId);
+        const user = await User.findById(req.body.userId);
 
         if(!user) {
             return res.status(404).send("User does not exist");
@@ -49,25 +49,29 @@ Router.get(
 // Desc     Update a user
 // Access   Private
 Router.put(
-    "/:userId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
         // Store request values into callable variables
         const {
+            userId,
             username,
             email,
             password,
             trips,
-
             invitations
 
         } = req.body;
 
         try {
+            let user;
             // Retrieve a user by ID
-
-            let user = await User.findById(req.params.userId);
+            if (userId) {
+                user = await User.findById(userId);
+            } else {
+                user = await User.findById(req.user);
+            }
 
             // Check if user exist in the database
             if (!user) {
@@ -79,7 +83,6 @@ Router.put(
             email ? user.email = email : null;
             password ? user.password = password : null;
             trips ? user.trips = trips : null;
-
             invitations ? user.invitations = invitations : null;
 
             // Save the user
@@ -99,13 +102,13 @@ Router.put(
 // Desc     Remove a user
 // Access   Private
 Router.delete(
-    "/:userId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
         try {
             // Find a user inside the database
-            const user = await User.findById(req.params.userId);
+            const user = await User.findById(req.user);
             if(!user) {
                 return res.status(404).send("User does not exist");
             }
@@ -118,7 +121,6 @@ Router.delete(
             console.log(err);
             return res.status(500).send("Server error");
         }
-
     }
 )
 
