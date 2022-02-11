@@ -16,7 +16,7 @@ Router.post(
 
     async (req, res) => {
         // Check if there are any invalid inputs
-        const errors = validationResult(req.body);
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
         }
@@ -53,7 +53,7 @@ Router.post(
             });
 
             // Hashing the password using bcrypt algorithm
-            const rounds = 10;
+            const rounds = Number(process.env.BCRYPT_SALT);
             user.password = await bcrypt.hash(password, rounds);
 
             // Save the user into the database

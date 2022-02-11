@@ -4,11 +4,15 @@ const Trip = require("../models/TripModel");
 const Event = require("../models/EventModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
+const checkTripPermission = require("../utilsServer/checkTripPermission");
 const axios = require("axios");
 const baseUrl = require("../utilsServer/baseUrl");
 
+// Route    POST api/event
+// Desc     Create a event for a trip
+// Access   Private
 Router.post(
-    "/:tripId",
+    "/",
     check("name", "The name of the trip is required").notEmpty(),
     check("location", "The location is required").notEmpty(),
     check("startDate", "The start date is required").notEmpty(),
@@ -19,13 +23,16 @@ Router.post(
 
     async (req, res) => {
         // Check if there are any invalid inputs
-        const errors = validationResult(req.body);
+        const errors = validationResult(req);
+        console.log(errors)
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
         }
 
+
         // Store request values into callable variables
         const {
+            tripId,
             name,
             location,
             startDate,
@@ -40,7 +47,7 @@ Router.post(
 
         try {
             // Query the trip and see if it exists
-            const trip = await Trip.findById(req.params.tripId);
+            const trip = await Trip.findById(tripId);
             if(!trip) {
                 return res.status(404).send("The trip does not exist");
             }
@@ -58,35 +65,37 @@ Router.post(
                 phoneNumber,
                 websiteUrl
             });
-            let eventList = trip.events;
 
-            // Save the event in the 'event' collection and the event id into the trip's list of events
+            // Save the housing in the 'housing' collection and the housing id into the trip's list of housings
             await newEvent.save().then(event => {
-                eventList.unshift(event._id);
+                trip.events.unshift(event._id);
             });
 
-            const token = req.header("auth-token");
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: eventList }, { headers: { "auth-token": token } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).json(newEvent);
         } catch (err) {
-            console.log(err);
+            //console.error(err);
             return res.status(500).send("Server error");
         }
     }
 )
 
-// Route    GET api/trip
+// Route    GET api/event
 // Desc     Retrieve information about a event of a trip
 // Access   Private
 Router.get(
-    "/:tripId/:eventId",
+    "/info",
     authMiddleware,
 
     async(req, res) => {
+        // Store request values into callable variables
+        const {
+            eventId
+        } = req.body;
 
         // Find a event inside the database
-        const event = await Event.findById(req.params.eventId);
+        const event = await Event.findById(eventId);
 
         if(!event) {
             return res.status(404).send("Event does not exist");
@@ -97,17 +106,21 @@ Router.get(
     }
 )
 
-// Route    GET api/trip
+// Route    GET api/event
 // Desc     Retrieve all of the trip's events
 // Access   Private
 Router.get(
-    "/:tripId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
+        // Store request values into callable variables
+        const {
+            tripId
+        } = req.body;
 
         // Find the trip inside the database
-        const trip = await Trip.findById(req.params.tripId);
+        const trip = await Trip.findById(tripId);
         
         if(!trip) {
             return res.status(404).send("Trip does not exist");
@@ -120,16 +133,18 @@ Router.get(
     }
 )
 
-// Route    PUT api/trip
+// Route    PUT api/event
 // Desc     Update a event
 // Access   Private
 Router.put(
-    "/:tripId/:eventId",
+    "/",
     authMiddleware,
+    checkTripPermission,
 
     async(req, res) => {
         // Store request values into callable variables
         const {
+            eventId,
             name,
             location,
             startDate,
@@ -144,7 +159,7 @@ Router.put(
 
         try {
             // Retrieve a event by ID
-            let event = await Event.findById(req.params.eventId);
+            let event = await Event.findById(eventId);
 
             // Check if event exist in the database
             if (!event) {
@@ -176,30 +191,37 @@ Router.put(
     }
 )
 
-// Route    DELETE api/trip
+// Route    DELETE api/event
 // Desc     Remove a event
 // Access   Private
 Router.delete(
-    "/:tripId/:eventId",
+    "/",
     authMiddleware,
+    checkTripPermission,
 
     async(req, res) => {
+    // Store request values into callable variables
+        const {
+            tripId,
+            eventId
+        } = req.body;
+
         try {
             // Find a trip inside the database
-            const trip = await Trip.findById(req.params.tripId);
+            const trip = await Trip.findById(tripId);
             if(!trip) {
                 return res.status(404).send("Trip does not exist");
             }
 
             // Find a event inside the database
-            const event = await Event.findById(req.params.eventId);
+            const event = await Event.findById(eventId);
             if(!event) {
                 return res.status(404).send("Event does not exist");
             }
 
             trip.events = trip.events.filter(eventId => eventId.valueOf() !== event._id.valueOf());
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
 
             await event.remove();
 

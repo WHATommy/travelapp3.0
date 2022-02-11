@@ -4,11 +4,15 @@ const Trip = require("../models/TripModel");
 const Housing = require("../models/HousingModel");
 const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/authMiddleware");
+const checkTripPermission = require("../utilsServer/checkTripPermission");
 const axios = require("axios");
 const baseUrl = require("../utilsServer/baseUrl");
 
+// Route    POST api/housing
+// Desc     Create a event for a trip
+// Access   Private
 Router.post(
-    "/:tripId",
+    "/",
     check("name", "The name of the trip is required").notEmpty(),
     check("location", "The location is required").notEmpty(),
     check("startDate", "The start date is required").notEmpty(),
@@ -19,13 +23,14 @@ Router.post(
 
     async (req, res) => {
         // Check if there are any invalid inputs
-        const errors = validationResult(req.body);
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() })
         }
 
         // Store request values into callable variables
         const {
+            tripId,
             name,
             location,
             startDate,
@@ -38,7 +43,7 @@ Router.post(
 
         try {
             // Query the trip and see if it exists
-            const trip = await Trip.findById(req.params.tripId);
+            const trip = await Trip.findById(tripId);
             if(!trip) {
                 return res.status(404).send("The trip does not exist");
             }
@@ -60,7 +65,7 @@ Router.post(
                 trip.housings.unshift(housing._id);
             });
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).json(newHousing);
         } catch (err) {
@@ -70,16 +75,21 @@ Router.post(
     }
 )
 
-// Route    GET api/trip
+// Route    GET api/housing
 // Desc     Retrieve information about a housing of a trip
 // Access   Private
 Router.get(
-    "/:tripId/:housingId",
+    "/info",
     authMiddleware,
 
     async(req, res) => {
+        // Store request values into callable variables
+        const {
+            housingId
+        } = req.body;
+        
         // Find a housing inside the database
-        const housing = await Housing.findById(req.params.housingId);
+        const housing = await Housing.findById(housingId);
 
         if(!housing) {
             return res.status(404).send("Housing does not exist");
@@ -89,16 +99,21 @@ Router.get(
     }
 )
 
-// Route    GET api/trip
+// Route    GET api/housing
 // Desc     Retrieve all of the trip's housings
 // Access   Private
 Router.get(
-    "/:tripId",
+    "/",
     authMiddleware,
 
     async(req, res) => {
+        // Store request values into callable variables
+        const {
+            tripId
+        } = req.body;
+
         // Find the trip inside the database
-        const trip = await Trip.findById(req.params.tripId);
+        const trip = await Trip.findById(tripId);
         
         if(!trip) {
             return res.status(404).send("Trip does not exist");
@@ -111,16 +126,18 @@ Router.get(
     }
 )
 
-// Route    PUT api/trip
+// Route    PUT api/housing
 // Desc     Update a housing
 // Access   Private
 Router.put(
-    "/:tripId/:housingId",
+    "/",
     authMiddleware,
+    checkTripPermission,
 
     async(req, res) => {
         // Store request values into callable variables
         const {
+            housingId, 
             name,
             location,
             startDate,
@@ -133,7 +150,7 @@ Router.put(
 
         try {
             // Retrieve a housing by ID
-            let housing = await Housing.findById(req.params.housingId);
+            let housing = await Housing.findById(housingId);
 
             // Check if housing exist in the database
             if (!housing) {
@@ -162,30 +179,37 @@ Router.put(
     }
 )
 
-// Route    DELETE api/trip
+// Route    DELETE api/housing
 // Desc     Remove a housing
 // Access   Private
 Router.delete(
-    "/:tripId/:housingId",
+    "/",
     authMiddleware,
+    checkTripPermission,
 
     async(req, res) => {
+        // Store request values into callable variables
+        const {
+            tripId,
+            housingId
+        } = req.body;
+
         try {
             // Find a trip inside the database
-            const trip = await Trip.findById(req.params.tripId);
+            const trip = await Trip.findById(tripId);
             if(!trip) {
                 return res.status(404).send("Trip does not exist");
             }
 
             // Find a housing inside the database
-            const housing = await Housing.findById(req.params.housingId);
+            const housing = await Housing.findById(housingId);
             if(!housing) {
                 return res.status(404).send("Housing does not exist");
             }
 
             trip.housings = trip.housings.filter(housingId => housingId.valueOf() !== housing._id.valueOf());
 
-            await axios.put(`${baseUrl}/api/trip/${trip._id}`, { housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, housings: trip.housings }, { headers: { "auth-token": req.header("auth-token") } });
 
             await housing.remove();
 
