@@ -46,7 +46,8 @@ const TripSchema = new Schema({
                 type: Schema.Types.ObjectId
             },
             moderator: {
-                type: Boolean
+                type: Boolean,
+                default: false
             }
         }
     ],

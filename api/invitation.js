@@ -3,6 +3,7 @@ const Router = express.Router();
 const Trip = require("../models/TripModel");
 const User = require("../models/UserModel");
 const authMiddleware = require("../middleware/authMiddleware");
+const checkTripPermission = require("../utilsServer/checkTripPermission");
 const axios = require("axios");
 const baseUrl = require("../utilsServer/baseUrl");
 
@@ -10,15 +11,14 @@ const baseUrl = require("../utilsServer/baseUrl");
 // Desc     Add a user into the trip's pending user, add the invitation to the targeted user's invitation list
 // Access   Private
 Router.put(
-    "/invite/:tripId",
+    "/invite",
     authMiddleware,
+    checkTripPermission,
 
     async(req, res) => {
 
         const {
-            tripId
-        } = req.params;
-        const {
+            tripId,
             userId
         } = req.body;
 
@@ -35,8 +35,16 @@ Router.put(
                 return res.status(401).send("Trip does not exist");
             }
 
+            // Check if the user being invited is already in the trip or in the pending list
             const isAttendee = trip.attendees.find(attendee => attendee._id.valueOf() == user._id.valueOf());
-            console.log(isAttendee)
+            if(isAttendee) {
+                return res.status(400).send("User is already attending this trip");
+            }
+            isAttendee = trip.pendingUsers.find(pendingUser => pendingUser._id.valueOf() == user._id.valueOf());
+            if(isAttendee) {
+                return res.status(400).send("User is already attending this trip");
+            }
+            isAttendee = trip.pwner == user._id.valueOf();
             if(isAttendee) {
                 return res.status(400).send("User is already attending this trip");
             }
@@ -47,7 +55,7 @@ Router.put(
 
             // Add the user id into the trip's list of pending users
             trip.pendingUsers.unshift(userId);
-            await axios.put(`${baseUrl}/api/trip/${tripId}`, { pendingUsers: trip.pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, pendingUsers: trip.pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).send("Invite Success");
         } catch (err) {
@@ -61,17 +69,17 @@ Router.put(
 // Desc     Add a user into the trip's pending user, add the invitation to the targeted user's invitation list
 // Access   Private
 Router.put(
-    "/accept/:tripId",
+
+    "/accept",
     authMiddleware,
 
     async(req, res) => {
 
         const {
             tripId
-        } = req.params;
-        const {
-            userId
+
         } = req.body;
+        const userId = req.user;
 
         try {
             // Find the user in the database
@@ -94,7 +102,7 @@ Router.put(
             // Filter out the targeted user id in the trip's list of pending users and add the user id into the list of attendees
             const pendingUsers = trip.pendingUsers.filter(user => user._id.valueOf() !== userId.valueOf());
             trip.attendees.unshift(userId);
-            await axios.put(`${baseUrl}/api/trip/${tripId}`, { attendees: trip.attendees, pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, attendees: trip.attendees, pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).send("Accept Success");
         } catch (err) {
@@ -108,17 +116,17 @@ Router.put(
 // Desc     Remove a user from the trip's pending user, remove the invitation from the targeted user's invitation list
 // Access   Private
 Router.put(
-    "/decline/:tripId",
-    authMiddleware,
 
+    "/decline",
+    authMiddleware,
     async(req, res) => {
 
         const {
             tripId
-        } = req.params;
-        const {
-            userId
+
         } = req.body;
+        const userId = req.user;
+
 
         try {
             // Find the user in the database
@@ -139,7 +147,7 @@ Router.put(
 
             // Filter out the targeted user id out of the trip's list of pending users
             const pendingUsers = trip.pendingUsers.filter(user => user._id.valueOf() !== userId.valueOf());
-            await axios.put(`${baseUrl}/api/trip/${tripId}`, { pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
 
             return res.status(200).send("Decline Success");
         } catch (err) {

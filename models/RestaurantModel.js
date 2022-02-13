@@ -6,6 +6,9 @@ const RestaurantSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'trips'
     },
+    originalPoster: {
+        type: Schema.Types.ObjectId
+    },
     name: {
         type: String,
         required: true

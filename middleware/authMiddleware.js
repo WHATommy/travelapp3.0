@@ -15,6 +15,10 @@ module.exports = function (req, res, next) {
       if (error) {
         return res.status(401).json({ msg: "Invalid token" });
       } else {
+        // Check if the request user has been edited
+        if(req.user) {
+          return res.status(401).json({ msg: "Access denied" });
+        }
         req.user = decoded.userId;
         next();
       }
