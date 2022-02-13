@@ -10,14 +10,18 @@ const baseUrl = require("../utilsServer/baseUrl");
 // Desc     Add a user into the trip's pending user, add the invitation to the targeted user's invitation list
 // Access   Private
 Router.put(
-    "/invite/:tripId/:userId",
+    "/invite/:tripId",
     authMiddleware,
 
     async(req, res) => {
+
         const {
-            tripId,
-            userId
+            tripId
         } = req.params;
+        const {
+            userId
+        } = req.body;
+
         try {
             // Find the user in the database
             const user = await User.findById(userId);
@@ -39,7 +43,7 @@ Router.put(
 
             // Add the trip id into the user's list of invitations
             user.invitations.unshift(tripId);
-            await axios.put(`${baseUrl}/api/user/${userId}`, { invitations: user.invitations }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/user`, { userId, invitations: user.invitations }, { headers: { "auth-token": req.header("auth-token") } });
 
             // Add the user id into the trip's list of pending users
             trip.pendingUsers.unshift(userId);
@@ -57,14 +61,18 @@ Router.put(
 // Desc     Add a user into the trip's pending user, add the invitation to the targeted user's invitation list
 // Access   Private
 Router.put(
-    "/accept/:tripId/:userId",
+    "/accept/:tripId",
     authMiddleware,
 
     async(req, res) => {
+
         const {
-            tripId,
-            userId
+            tripId
         } = req.params;
+        const {
+            userId
+        } = req.body;
+
         try {
             // Find the user in the database
             const user = await User.findById(userId);
@@ -81,7 +89,7 @@ Router.put(
             // Filter out the targeted trip id out of the user's list of invitation and add the trip id into the user's list of trips
             const invitations = user.invitations.filter(invitation => invitation._id.valueOf() !== tripId.valueOf());
             user.trips.unshift(tripId);
-            await axios.put(`${baseUrl}/api/user/${userId}`, { trips: user.trips, invitations }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/user`, { userId, trips: user.trips, invitations }, { headers: { "auth-token": req.header("auth-token") } });
 
             // Filter out the targeted user id in the trip's list of pending users and add the user id into the list of attendees
             const pendingUsers = trip.pendingUsers.filter(user => user._id.valueOf() !== userId.valueOf());
@@ -100,14 +108,18 @@ Router.put(
 // Desc     Remove a user from the trip's pending user, remove the invitation from the targeted user's invitation list
 // Access   Private
 Router.put(
-    "/decline/:tripId/:userId",
+    "/decline/:tripId",
     authMiddleware,
 
     async(req, res) => {
+
         const {
-            tripId,
-            userId
+            tripId
         } = req.params;
+        const {
+            userId
+        } = req.body;
+
         try {
             // Find the user in the database
             const user = await User.findById(userId);
@@ -123,7 +135,7 @@ Router.put(
 
             // Filter out the targeted trip id out of the user's list of invitation
             const invitations = user.invitations.filter(invitation => invitation._id.valueOf() !== tripId.valueOf());
-            await axios.put(`${baseUrl}/api/user/${userId}`, { invitations }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/user`, { userId, invitations }, { headers: { "auth-token": req.header("auth-token") } });
 
             // Filter out the targeted user id out of the trip's list of pending users
             const pendingUsers = trip.pendingUsers.filter(user => user._id.valueOf() !== userId.valueOf());
