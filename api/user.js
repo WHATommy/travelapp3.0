@@ -126,7 +126,9 @@ Router.put(
         try {
             let user;
             // Retrieve a user by ID
+
             user = await User.findById(userId);
+
 
             // Check if user exist in the database
             if (!user) {

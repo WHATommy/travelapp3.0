@@ -69,6 +69,7 @@ Router.put(
 // Desc     Add a user into the trip's pending user, add the invitation to the targeted user's invitation list
 // Access   Private
 Router.put(
+
     "/accept",
     authMiddleware,
 
@@ -76,6 +77,7 @@ Router.put(
 
         const {
             tripId
+
         } = req.body;
         const userId = req.user;
 
@@ -114,15 +116,17 @@ Router.put(
 // Desc     Remove a user from the trip's pending user, remove the invitation from the targeted user's invitation list
 // Access   Private
 Router.put(
+
     "/decline",
     authMiddleware,
-
     async(req, res) => {
 
         const {
             tripId
+
         } = req.body;
         const userId = req.user;
+
 
         try {
             // Find the user in the database
