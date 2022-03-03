@@ -7,14 +7,15 @@ const bcrypt = require("bcryptjs");
 
 Router.post(
     "/",
-    check("username", "Username cannot be empty").isEmpty(),
-    check("password", "Password cannot be empty").isEmpty(),
+    check("email", "Email cannot be empty").notEmpty(),
+    check("email", "Please include a valid email").isEmail(),
+    check("password", "Password cannot be empty").notEmpty(),
 
     async (req, res) => {
         // Check if there are any invalid inputs
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
+            return res.status(400).json(errors.array())
         }
 
         // Store request values into callable variables
@@ -27,13 +28,13 @@ Router.post(
             // Check if incoming email exist in the database
             const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
             if(!user) {
-                return res.status(401).send("Your email or password may be incorrect, or you have not register an account under these credentials.");
+                return res.status(401).send([{msg:"Your email or password may be incorrect, or you have not register an account under these credentials."}]);
             }
 
             // Check if the incoming password matches with the selected user's password through bcrypt
             const validPassword = await bcrypt.compare(password, user.password);
             if (!validPassword) {
-                return res.status(401).send("Your email or password may be incorrect, or you have not register an account under these credentials.");
+                return res.status(401).send([{msg:"Your email or password may be incorrect, or you have not register an account under these credentials."}]);
             }
 
             // Create a token for the user using JWT
