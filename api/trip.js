@@ -223,7 +223,7 @@ Router.delete(
                     userTrips = user.trips.filter(userTrip => userTrip._id.valueOf() != trip._id.valueOf());
                 })
                 .then(() => {
-                    axios.put(`${baseUrl}/api/user`, { userId, trips: userTrips }, { headers: { "auth-token": req.header("auth-token") } });
+                    axios.put(`${baseUrl}/api/user`, { userId, trips: userTrips }, { headers: { "token": req.header("token") } });
                 })
             });
 

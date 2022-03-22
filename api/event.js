@@ -71,7 +71,7 @@ Router.post(
                 trip.events.unshift(event._id);
             });
 
-            await axios.put(`${baseUrl}/api/trip`, { tripId, events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, events: trip.events }, { headers: { "token": req.header("token") } });
 
             return res.status(200).json(newEvent);
         } catch (err) {
@@ -221,7 +221,7 @@ Router.delete(
 
             trip.events = trip.events.filter(eventId => eventId.valueOf() !== event._id.valueOf());
 
-            await axios.put(`${baseUrl}/api/trip`, { tripId, events: trip.events }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, events: trip.events }, { headers: { "token": req.header("token") } });
 
             await event.remove();
 

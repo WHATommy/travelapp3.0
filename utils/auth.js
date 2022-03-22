@@ -16,7 +16,6 @@ export const registerUser = async (user, setError, handleShowSignUp) => {
 }
 
 export const loginUser = async (user, setError, handleShowLogin) => {
-    console.log(user)
     try {
         const res = await axios.post(`${baseUrl}/api/auth/`, {email: user.email, password: user.password});
         handleShowLogin(true);
@@ -29,6 +28,15 @@ export const loginUser = async (user, setError, handleShowLogin) => {
 }
 
 const setToken = authToken => {
-    cookie.set("auth-token", authToken);
-    Router.push("/");
+    cookie.set("token", authToken);
+    Router.push("/dashboard");
+}
+
+export const redirectUser = (ctx, location) => {
+    if(ctx.req) {
+        ctx.res.writeHead(302, {Location: location});
+        ctx.res.end();
+    } else {
+        Router.push(location);
+    }
 }
