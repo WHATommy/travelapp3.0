@@ -10,8 +10,8 @@ function SignUpAndLogin() {
         confirmPassword: ""
     });
 
-    const [errorMsg, setErrorMsg] = useState(null);
     const { email, username, password, confirmPassword } = user;
+    const [errorMsg, setErrorMsg] = useState(null);
     const [showSignUp, setShowSignUp] = useState(false);
     const [showLogin, setShowLogin] = useState(false);
 

@@ -10,11 +10,10 @@ function Layout({children, user}) {
     Router.onRouteChangeStart = () => nprogress.start();
     Router.onRouteChangeComplete = () => nprogress.done();
     Router.onRouteChangeError = () => nprogress.done();
-
     return (
         <>
-            <Navbar />
-            <Container>
+            <Navbar {...user} />
+            <Container fluid>
                 {children}
             </Container>
         </>

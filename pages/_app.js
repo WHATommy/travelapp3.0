@@ -27,7 +27,7 @@ class MyApp extends App {
 				pageProps.user = user;
 			} catch (error) {
 				destroyCookie(ctx, 'token');
-        redirectUser(ctx, "/");
+        		redirectUser(ctx, "/");
 			}
 		}
 
@@ -39,6 +39,7 @@ class MyApp extends App {
     return (
       <Layout {...pageProps}>
         <Component {...pageProps} />
+            <style jsx global>{'body { background: "#fcfdff";}'}</style>
       </Layout>
     );
   }
