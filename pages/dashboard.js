@@ -35,7 +35,7 @@ function Dashboard({ user, trips }) {
             <Row xs={1} md={4} className="g-4 mt-3 text-center">
                 {trips.map(trip => (
                     <Col>
-                        <Card style={{height: "271px"}}>
+                        <Card style={{minheight: "271px"}}>
                             <Card.Img variant="top" src="" />
                             <Card.Body>
                                 <Card.Title className="pb-2">{trip.name}</Card.Title>

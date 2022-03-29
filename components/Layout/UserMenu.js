@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, Nav, Form, Button, Alert} from "react-bootstrap";
-import { registerUser, loginUser } from "../../utils/auth";
+import { destroyCookie } from 'nookies';
+import { registerUser, loginUser, handleLogout } from "../../utils/auth";
 
 function UserMenu(user) {
-    console.log(user)
     const [account, setAccount] = useState({
-        email: "",
-        username: "",
-        password: "",
-        confirmPassword: ""
+        email: user.email,
+        username: user.username,
+        newPassword: "",
+        confirmNewPassword: ""
     });
 
-    const { email, username, password, confirmPassword } = account;
+    const { email, username, newPassword, confirmNewPassword } = account;
     const [errorMsg, setErrorMsg] = useState(null);
     const [showAccount, setShowAccount] = useState(false);
 
@@ -22,8 +22,7 @@ function UserMenu(user) {
         setShowAccount(!showAccount);
     }
     const logout = () => {
-        destroyCookie(ctx, 'token');
-        redirectUser(ctx, "/");
+        handleLogout();
     }
 
     const submitForm = async (e) => {
@@ -33,7 +32,7 @@ function UserMenu(user) {
 
     return ( 
         <>
-            <Nav.Link onClick={handleShowAccount}>Account</Nav.Link>
+            <Nav.Link onClick={handleShowAccount}>Edit Account</Nav.Link>
             <Modal show={showAccount} onHide={handleShowAccount} onExit={() => setErrorMsg(null)} dialogClassName="signupModal">
                 {
                     errorMsg !== null ? 
@@ -56,7 +55,6 @@ function UserMenu(user) {
                         <Form.Control 
                             name="email"
                             type="email" 
-                            placeholder="Enter email" 
                             value={email}
                             onChange={onChange}
                             required
@@ -67,30 +65,7 @@ function UserMenu(user) {
                         <Form.Control 
                             name="username"
                             type="text" 
-                            placeholder="Enter username" 
                             value={username}
-                            onChange={onChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formPassword">
-                        <Form.Label>Password</Form.Label>
-                        <Form.Control 
-                            name="password"
-                            type="password" 
-                            placeholder="Password" 
-                            value={password}
-                            onChange={onChange}
-                            required
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formConfirmPassword">
-                        <Form.Label>Confirm Password</Form.Label>
-                        <Form.Control 
-                            name="confirmPassword"
-                            type="password" 
-                            placeholder="Confirm password" 
-                            value={confirmPassword}
                             onChange={onChange}
                             required
                         />

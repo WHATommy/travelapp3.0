@@ -21,7 +21,6 @@ Router.get(
         if(!user) {
             return res.status(404).send("User does not exist");
         }
-
         return res.status(200).json(user);
 
     }
