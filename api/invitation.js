@@ -51,11 +51,11 @@ Router.put(
 
             // Add the trip id into the user's list of invitations
             user.invitations.unshift(tripId);
-            await axios.put(`${baseUrl}/api/user`, { userId, invitations: user.invitations }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/user`, { userId, invitations: user.invitations }, { headers: { "token": req.header("token") } });
 
             // Add the user id into the trip's list of pending users
             trip.pendingUsers.unshift(userId);
-            await axios.put(`${baseUrl}/api/trip`, { tripId, pendingUsers: trip.pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, pendingUsers: trip.pendingUsers }, { headers: { "token": req.header("token") } });
 
             return res.status(200).send("Invite Success");
         } catch (err) {
@@ -97,12 +97,12 @@ Router.put(
             // Filter out the targeted trip id out of the user's list of invitation and add the trip id into the user's list of trips
             const invitations = user.invitations.filter(invitation => invitation._id.valueOf() !== tripId.valueOf());
             user.trips.unshift(tripId);
-            await axios.put(`${baseUrl}/api/user`, { userId, trips: user.trips, invitations }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/user`, { userId, trips: user.trips, invitations }, { headers: { "token": req.header("token") } });
 
             // Filter out the targeted user id in the trip's list of pending users and add the user id into the list of attendees
             const pendingUsers = trip.pendingUsers.filter(user => user._id.valueOf() !== userId.valueOf());
             trip.attendees.unshift(userId);
-            await axios.put(`${baseUrl}/api/trip`, { tripId, attendees: trip.attendees, pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, attendees: trip.attendees, pendingUsers }, { headers: { "token": req.header("token") } });
 
             return res.status(200).send("Accept Success");
         } catch (err) {
@@ -143,11 +143,11 @@ Router.put(
 
             // Filter out the targeted trip id out of the user's list of invitation
             const invitations = user.invitations.filter(invitation => invitation._id.valueOf() !== tripId.valueOf());
-            await axios.put(`${baseUrl}/api/user`, { userId, invitations }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/user`, { userId, invitations }, { headers: { "token": req.header("token") } });
 
             // Filter out the targeted user id out of the trip's list of pending users
             const pendingUsers = trip.pendingUsers.filter(user => user._id.valueOf() !== userId.valueOf());
-            await axios.put(`${baseUrl}/api/trip`, { tripId, pendingUsers }, { headers: { "auth-token": req.header("auth-token") } });
+            await axios.put(`${baseUrl}/api/trip`, { tripId, pendingUsers }, { headers: { "token": req.header("token") } });
 
             return res.status(200).send("Decline Success");
         } catch (err) {

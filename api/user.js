@@ -21,7 +21,6 @@ Router.get(
         if(!user) {
             return res.status(404).send("User does not exist");
         }
-
         return res.status(200).json(user);
 
     }
@@ -53,23 +52,17 @@ Router.get(
 // Access   Private
 Router.put(
     "/password",
-    check("oldPassword", "Old password field cannot be empty").notEmpty(),
+    check("prevPassword", "Old password field cannot be empty").notEmpty(),
     check("newPassword", "New password field cannot be empty").notEmpty(),
     check("newPassword", "The new password must be at least 6 characters long").isLength({min: 6}),
-    check("newPassword", "The new password cannot be the same as your old password").custom((value, { req }) => value !== req.body.oldPassword),
+    check("newPassword", "The new password cannot be the same as your old password").custom((value, { req }) => value !== req.body.prevPassword),
+    check("newPassword", "Password and confirm password do not match").custom((value, { req }) => value === req.body.confirmNewPassword),
     authMiddleware,
 
     async(req, res) => {
-        // Check if there are any invalid inputs
-        const errors = validationResult(req);
-        console.log(errors)
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
-        }
-
         // Store request values into callable variables
         const {
-            oldPassword,
+            prevPassword,
             newPassword
         } = req.body;
 
@@ -77,16 +70,22 @@ Router.put(
             let user;
             // Retrieve a user by ID
             user = await User.findById(req.user).select("+password");
-
+            
             // Check if user exist in the database
             if (!user) {
-                return res.status(404).send("User does not exist");
+                return res.status(404).send([{msg:"User does not exist"}]);
             }
 
             // Check if the user's input for old password matches with their current password
-            const isPassword = await bcrypt.compare(oldPassword, user.password);
+            const isPassword = await bcrypt.compare(prevPassword, user.password);
             if (!isPassword) {
-                return res.status(401).send("Input for old password is invalid");
+                return res.status(401).send([{msg:"Input for old password is invalid"}]);
+            }
+
+            // Check if there are any invalid inputs
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json(errors.array())
             }
 
             // Update the user's password
@@ -106,7 +105,7 @@ Router.put(
 )
 
 
-// Route    PUT api/trip
+// Route    PUT api/user
 // Desc     Update a user
 // Access   Private
 Router.put(
@@ -116,17 +115,16 @@ Router.put(
     async(req, res) => {
         // Store request values into callable variables
         const {
-            userId,
             username,
             email,
             trips,
             invitations
         } = req.body;
+        let userId = req.user;
 
         try {
             let user;
             // Retrieve a user by ID
-
             user = await User.findById(userId);
 
 
@@ -136,18 +134,16 @@ Router.put(
             }
 
             // Update the user structure
-            // Check if the request is to change the user's sensitive info, it is from the user itself
-            if(req.user == userId) {
-                username ? user.username = username : null;
-                email ? user.email = email : null;
-            }
+            // Check that if the request is to change the user's sensitive info, it is from the user itself
+            username ? user.username = username : null;
+            email ? user.email = email : null;
             trips ? user.trips = trips : null;
             invitations ? user.invitations = invitations : null;
 
             // Save the user
             await user.save();
 
-            return res.status(200).json(user);
+            return res.status(200).send(true);
 
         } catch (err) {
             console.log(err);
