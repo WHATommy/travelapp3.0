@@ -17,7 +17,6 @@ function UserMenu(user) {
     const [passwordModal, setPasswordModal] = useState(false);
     const [btnDisable, setBtnDisable] = useState(true);
 
-
     useEffect(() => {
         if(accountModal) {
             email === user.email && username === user.username ? setBtnDisable(true) : setBtnDisable(false);
@@ -25,7 +24,7 @@ function UserMenu(user) {
         if(passwordModal) {
             prevPassword.length === 0 || newPassword.length === 0 || confirmNewPassword.length === 0 ? setBtnDisable(true) : setBtnDisable(false);
         }
-    }, [account]);
+    }, [account, btnDisable]);
 
     const onChange = (e) => {
         setAccount({ ...account, [e.target.name]: e.target.value });
@@ -85,6 +84,7 @@ function UserMenu(user) {
                             value={email}
                             onChange={onChange}
                             required
+                            isInvalid={true}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formUsername">

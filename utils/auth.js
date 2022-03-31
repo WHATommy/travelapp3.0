@@ -41,7 +41,6 @@ export const updateAccount = async (username, email, setError) => {
 
 
 export const updatePassword = async (prevPassword, newPassword, confirmNewPassword, setError) => {
-    console.log(prevPassword, newPassword, confirmNewPassword)
     try {
         const res = await axios.put(`${baseUrl}/api/user/password/`, {prevPassword: prevPassword, newPassword: newPassword, confirmNewPassword: confirmNewPassword}, { headers: { "token":  cookie.get("token") } });
         if (res) window.alert("Password change successful!")

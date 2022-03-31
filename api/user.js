@@ -60,12 +60,6 @@ Router.put(
     authMiddleware,
 
     async(req, res) => {
-        // Check if there are any invalid inputs
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json(errors.array())
-        }
-
         // Store request values into callable variables
         const {
             prevPassword,
@@ -76,18 +70,28 @@ Router.put(
             let user;
             // Retrieve a user by ID
             user = await User.findById(req.user).select("+password");
+            
             // Check if user exist in the database
             if (!user) {
                 return res.status(404).send([{msg:"User does not exist"}]);
             }
+
             // Check if the user's input for old password matches with their current password
             const isPassword = await bcrypt.compare(prevPassword, user.password);
             if (!isPassword) {
                 return res.status(401).send([{msg:"Input for old password is invalid"}]);
             }
+
+            // Check if there are any invalid inputs
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json(errors.array())
+            }
+
             // Update the user's password
             const rounds = Number(process.env.BCRYPT_SALT);
             user.password = await bcrypt.hash(newPassword, rounds);
+
             // Save the user
             await user.save();
 
@@ -137,7 +141,6 @@ Router.put(
             invitations ? user.invitations = invitations : null;
 
             // Save the user
-            console.log(user)
             await user.save();
 
             return res.status(200).send(true);
