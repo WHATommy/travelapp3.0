@@ -27,11 +27,24 @@ export const loginUser = async (user, setError, handleShowLogin) => {
     }
 }
 
-export const updateAccountInfo = async (username, email, setError) => {
+export const updateAccount = async (username, email, setError) => {
     try {
-        console.log(cookie.get("token"))
         const res = await axios.put(`${baseUrl}/api/user/`, {username: username, email: email}, { headers: { "token":  cookie.get("token") } });
-        if(res) window.alert("Update successful!")
+        if (res) window.alert("Update successful!")
+    }
+    catch (err) {
+        const errors = catchErrors(err);
+        console.log(errors);
+        setError(errors);
+    }
+}
+
+
+export const updatePassword = async (prevPassword, newPassword, confirmNewPassword, setError) => {
+    console.log(prevPassword, newPassword, confirmNewPassword)
+    try {
+        const res = await axios.put(`${baseUrl}/api/user/password/`, {prevPassword: prevPassword, newPassword: newPassword, confirmNewPassword: confirmNewPassword}, { headers: { "token":  cookie.get("token") } });
+        if (res) window.alert("Password change successful!")
     }
     catch (err) {
         const errors = catchErrors(err);

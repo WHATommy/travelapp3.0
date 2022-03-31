@@ -1,41 +1,45 @@
 import React, { useEffect, useState } from 'react'
 import { Modal, Nav, Form, Button, Alert, NavDropdown } from "react-bootstrap";
 import { destroyCookie } from 'nookies';
-import { handleLogout, updateAccountInfo } from "../../utils/auth";
+import { handleLogout, updateAccount, updatePassword } from "../../utils/auth";
 
 function UserMenu(user) {
     const [account, setAccount] = useState({
         email: user.email,
         username: user.username,
-        oldPassword: '', 
+        prevPassword: '', 
         newPassword: '', 
         confirmNewPassword: ''
     });
-    const { email, username, oldPassword, newPassword, confirmNewPassword } = account;
+    const { email, username, prevPassword, newPassword, confirmNewPassword } = account;
     const [errorMsg, setErrorMsg] = useState(null);
-    const [showAccountModal, setShowAccountModal] = useState(false);
-    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [accountModal, setAccountModal] = useState(false);
+    const [passwordModal, setPasswordModal] = useState(false);
     const [btnDisable, setBtnDisable] = useState(true);
 
 
     useEffect(() => {
-        account.email === user.email && account.username === user.username ? setBtnDisable(true) : setBtnDisable(false);
+        if(accountModal) {
+            email === user.email && username === user.username ? setBtnDisable(true) : setBtnDisable(false);
+        }
+        if(passwordModal) {
+            prevPassword.length === 0 || newPassword.length === 0 || confirmNewPassword.length === 0 ? setBtnDisable(true) : setBtnDisable(false);
+        }
     }, [account]);
 
     const onChange = (e) => {
         setAccount({ ...account, [e.target.name]: e.target.value });
     }
 
-    const handleBtnDisable = () => {
-
-    }
-
-    const handleShowAccountModal = () => {
+    const handleAccountModal = () => {
         setAccount({...account, email: user.email, username: user.username});
-        setShowAccountModal(!showAccountModal);
+        setAccountModal(!accountModal);
+        setBtnDisable(true);
     }
-    const handleShowPasswordModal = () => {
-        setShowPasswordModal(!showPasswordModal);
+    const handlePasswordModal = () => {
+        setAccount({...account, prevPassword: '', newPassword: '', confirmNewPassword: ''});
+        setPasswordModal(!passwordModal);
+        setBtnDisable(true);
     }
     const logout = () => {
         handleLogout();
@@ -44,18 +48,19 @@ function UserMenu(user) {
     const submitAccountForm = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
-        updateAccountInfo(account.username, account.email, setErrorMsg);
+        updateAccount(username, email, setErrorMsg);
     }
 
     const submitPasswordForm = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
+        updatePassword(prevPassword, newPassword, confirmNewPassword, setErrorMsg);
     }
 
     return ( 
         <>
-            <NavDropdown.Item onClick={handleShowAccountModal}>Edit Account</NavDropdown.Item>
-            <Modal show={showAccountModal} onHide={handleShowAccountModal} onExit={() => setErrorMsg(null)} dialogClassName="accountModal">
+            <NavDropdown.Item onClick={handleAccountModal}>Edit Account</NavDropdown.Item>
+            <Modal show={accountModal} onHide={handleAccountModal} onExit={() => setErrorMsg(null)} dialogClassName="accountModal">
                 {
                     errorMsg !== null ? 
                     <Alert
@@ -100,8 +105,8 @@ function UserMenu(user) {
                 </Form>
             </Modal>
 
-            <NavDropdown.Item onClick={handleShowPasswordModal}>Change password</NavDropdown.Item>
-            <Modal show={showPasswordModal} onHide={handleShowPasswordModal} onExit={() => setErrorMsg(null)} dialogClassName="passwordModal">
+            <NavDropdown.Item onClick={handlePasswordModal}>Change password</NavDropdown.Item>
+            <Modal show={passwordModal} onHide={handlePasswordModal} onExit={() => setErrorMsg(null)} dialogClassName="passwordModal">
                 {
                     errorMsg !== null ? 
                     <Alert
@@ -121,13 +126,14 @@ function UserMenu(user) {
                 <Form.Group className="mb-3" controlId="formPassword">
                         <Form.Label>Old password</Form.Label>
                         <Form.Control 
-                            name="oldPassword"
+                            name="prevPassword"
                             type="password" 
-                            value={oldPassword}
+                            value={prevPassword}
                             onChange={onChange}
                             required
                         />
                     </Form.Group>
+                    <hr></hr>
                     <Form.Group className="mb-3" controlId="formPassword">
                         <Form.Label>New password</Form.Label>
                         <Form.Control 
@@ -149,7 +155,7 @@ function UserMenu(user) {
                         />
                     </Form.Group>
                     <div className="text-center">
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" disabled={btnDisable}>
                             Update
                         </Button>
                     </div>
