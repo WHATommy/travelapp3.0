@@ -22,7 +22,20 @@ export const loginUser = async (user, setError, handleShowLogin) => {
         setToken(res.data);
     } catch (err) {
         const errors = catchErrors(err);
-        console.log(errors)
+        console.log(errors);
+        setError(errors);
+    }
+}
+
+export const updateAccountInfo = async (username, email, setError) => {
+    try {
+        console.log(cookie.get("token"))
+        const res = await axios.put(`${baseUrl}/api/user/`, {username: username, email: email}, { headers: { "token":  cookie.get("token") } });
+        if(res) window.alert("Update successful!")
+    }
+    catch (err) {
+        const errors = catchErrors(err);
+        console.log(errors);
         setError(errors);
     }
 }

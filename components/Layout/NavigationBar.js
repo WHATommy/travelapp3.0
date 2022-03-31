@@ -9,13 +9,13 @@ function NavigationBar(user) {
         <Container>
             <Navbar.Brand href="/">Website Name Here</Navbar.Brand>
             {Object.keys(user).length === 0 ? 
-              <NavDropdown title="Menu" id="collasible-nav-dropdown" align="end">
+              <NavDropdown title="Menu" id="guest-nav-dropdown" align="end">
                 {
                   <SignUpAndLogin />
                 }
               </NavDropdown>
               :
-              <NavDropdown title={user.username} id="collasible-nav-dropdown" align="end">
+              <NavDropdown title={user.username} id="user-nav-dropdown" align="end">
                 {
                   <UserMenu {...user} />
                 }

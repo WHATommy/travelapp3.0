@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Nav, Form, Button, Alert} from "react-bootstrap";
+import { Modal, Nav, Form, Button, Alert, NavDropdown } from "react-bootstrap";
 import { registerUser, loginUser } from "../../utils/auth";
 
 function SignUpAndLogin() {
@@ -53,7 +53,7 @@ function SignUpAndLogin() {
 
     return ( 
         <>
-            <Nav.Link onClick={handleShowSignUp}>Sign Up</Nav.Link>
+            <NavDropdown.Item onClick={handleShowSignUp}>Sign Up</NavDropdown.Item>
             <Modal show={showSignUp} onHide={handleShowSignUp} onExit={() => setErrorMsg(null)} dialogClassName="signupModal">
                 {
                     errorMsg !== null ? 
@@ -127,7 +127,7 @@ function SignUpAndLogin() {
             </Modal>
 
 
-            <Nav.Link onClick={handleShowLogin}>Login</Nav.Link>
+            <NavDropdown.Item onClick={handleShowLogin}>Login</NavDropdown.Item>
             <Modal show={showLogin} onHide={handleShowLogin} onExit={() => setErrorMsg(null)} dialogClassName="loginModal">
                 {
                     errorMsg ? 

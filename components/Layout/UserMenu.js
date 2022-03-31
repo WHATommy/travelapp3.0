@@ -1,39 +1,61 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Nav, Form, Button, Alert} from "react-bootstrap";
+import { Modal, Nav, Form, Button, Alert, NavDropdown } from "react-bootstrap";
 import { destroyCookie } from 'nookies';
-import { registerUser, loginUser, handleLogout } from "../../utils/auth";
+import { handleLogout, updateAccountInfo } from "../../utils/auth";
 
 function UserMenu(user) {
     const [account, setAccount] = useState({
         email: user.email,
         username: user.username,
-        newPassword: "",
-        confirmNewPassword: ""
+        oldPassword: '', 
+        newPassword: '', 
+        confirmNewPassword: ''
     });
-
-    const { email, username, newPassword, confirmNewPassword } = account;
+    const { email, username, oldPassword, newPassword, confirmNewPassword } = account;
     const [errorMsg, setErrorMsg] = useState(null);
-    const [showAccount, setShowAccount] = useState(false);
+    const [showAccountModal, setShowAccountModal] = useState(false);
+    const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const [btnDisable, setBtnDisable] = useState(true);
+
+
+    useEffect(() => {
+        account.email === user.email && account.username === user.username ? setBtnDisable(true) : setBtnDisable(false);
+    }, [account]);
 
     const onChange = (e) => {
-        setUser({ ...account, [e.target.name]: e.target.value });
+        setAccount({ ...account, [e.target.name]: e.target.value });
     }
-    const handleShowAccount = () => {
-        setShowAccount(!showAccount);
+
+    const handleBtnDisable = () => {
+
+    }
+
+    const handleShowAccountModal = () => {
+        setAccount({...account, email: user.email, username: user.username});
+        setShowAccountModal(!showAccountModal);
+    }
+    const handleShowPasswordModal = () => {
+        setShowPasswordModal(!showPasswordModal);
     }
     const logout = () => {
         handleLogout();
     }
 
-    const submitForm = async (e) => {
+    const submitAccountForm = async (e) => {
+        e.preventDefault();
+        setErrorMsg(null);
+        updateAccountInfo(account.username, account.email, setErrorMsg);
+    }
+
+    const submitPasswordForm = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
     }
 
     return ( 
         <>
-            <Nav.Link onClick={handleShowAccount}>Edit Account</Nav.Link>
-            <Modal show={showAccount} onHide={handleShowAccount} onExit={() => setErrorMsg(null)} dialogClassName="signupModal">
+            <NavDropdown.Item onClick={handleShowAccountModal}>Edit Account</NavDropdown.Item>
+            <Modal show={showAccountModal} onHide={handleShowAccountModal} onExit={() => setErrorMsg(null)} dialogClassName="accountModal">
                 {
                     errorMsg !== null ? 
                     <Alert
@@ -47,9 +69,9 @@ function UserMenu(user) {
                     <></>
                 }
                 <Modal.Header closeButton>
-                    <Modal.Title>Account</Modal.Title>
+                    <Modal.Title>Edit Account</Modal.Title>
                 </Modal.Header>
-                <Form name="signupForm" error={errorMsg !== null} className="p-3" onSubmit={submitForm}>
+                <Form name="signupForm" error={errorMsg !== null} className="p-3" onSubmit={submitAccountForm}>
                     <Form.Group className="mb-3" controlId="formEmail">
                         <Form.Label>Email address</Form.Label>
                         <Form.Control 
@@ -71,13 +93,69 @@ function UserMenu(user) {
                         />
                     </Form.Group>
                     <div className="text-center">
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" disabled={btnDisable}>
                             Save
                         </Button>
                     </div>
                 </Form>
             </Modal>
-            <Nav.Link onClick={logout}>Logout</Nav.Link>
+
+            <NavDropdown.Item onClick={handleShowPasswordModal}>Change password</NavDropdown.Item>
+            <Modal show={showPasswordModal} onHide={handleShowPasswordModal} onExit={() => setErrorMsg(null)} dialogClassName="passwordModal">
+                {
+                    errorMsg !== null ? 
+                    <Alert
+                        variant='danger'
+                        onClose={() => setErrorMsg(null)}
+                        dismissible
+                    >
+                        { errorMsg.map(error => <p>{error.msg}</p>) }
+                    </Alert> 
+                    : 
+                    <></>
+                }
+                <Modal.Header closeButton>
+                    <Modal.Title>Change Password</Modal.Title>
+                </Modal.Header>
+                <Form name="signupForm" error={errorMsg !== null} className="p-3" onSubmit={submitPasswordForm}>
+                <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Label>Old password</Form.Label>
+                        <Form.Control 
+                            name="oldPassword"
+                            type="password" 
+                            value={oldPassword}
+                            onChange={onChange}
+                            required
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formPassword">
+                        <Form.Label>New password</Form.Label>
+                        <Form.Control 
+                            name="newPassword"
+                            type="password" 
+                            value={newPassword}
+                            onChange={onChange}
+                            required
+                        />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formConfirmPassword">
+                        <Form.Label>Confirm new password</Form.Label>
+                        <Form.Control 
+                            name="confirmNewPassword"
+                            type="password" 
+                            value={confirmNewPassword}
+                            onChange={onChange}
+                            required
+                        />
+                    </Form.Group>
+                    <div className="text-center">
+                        <Button variant="primary" type="submit">
+                            Update
+                        </Button>
+                    </div>
+                </Form>
+            </Modal>
+            <NavDropdown.Item onClick={logout}>Logout</NavDropdown.Item>
         </>
     )
 }
