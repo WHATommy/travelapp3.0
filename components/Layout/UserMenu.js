@@ -84,7 +84,6 @@ function UserMenu(user) {
                             value={email}
                             onChange={onChange}
                             required
-                            isInvalid={true}
                         />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formUsername">
