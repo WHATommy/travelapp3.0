@@ -1,10 +1,11 @@
 import { parseCookies } from 'nookies';
 import { useState, Fragment, useEffect } from 'react'
-import { Modal, Button, Row, Col, Card, Form } from 'react-bootstrap';
+import { Modal, Button, Row, Col, Card, Form, Alert } from 'react-bootstrap';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import baseUrl from '../utilsServer/baseUrl';
 import axios from "axios"; 
 import moment from "moment";
+import { createTrip } from "../utils/trip";
 
 function Dashboard({ user, trips }) {
     const [newTrip, setNewTrip] = useState({
@@ -19,12 +20,17 @@ function Dashboard({ user, trips }) {
     const { name, location, startDate, endDate, startTime, endTime } = newTrip;
     const [errorMsg, setErrorMsg] = useState(null);
     const [showForm, setShowForm] = useState(false);
-    const handleShowForm = () => {
+
+    const handleTripForm = () => {
         setShowForm(!showForm);
     }
+
     const submitTripForm = async (e) => {
         e.preventDefault();
-        console.log(name, location, startDate, endDate, startTime, endTime);
+        const trip = {
+            name, location, startDate, endDate, startTime, endTime
+        }
+        createTrip(trip, setErrorMsg, handleTripForm);
     }
 
     const onChange = (e) => {
@@ -49,7 +55,7 @@ function Dashboard({ user, trips }) {
                         </Card>
                     </Col>
                 ))}
-                <Col onClick={() => handleShowForm()}>
+                <Col onClick={() => handleTripForm()}>
                     <Card style={{height: "271px"}}>
                         <Card.Body style={{paddingTop: "110px", backgroundColor: "#c7f2d2"}}>
                             Add new trip
@@ -59,9 +65,9 @@ function Dashboard({ user, trips }) {
             </Row>
 
 
-            <Modal show={showForm} onHide={handleShowForm} onExit={() => setErrorMsg(null)} dialogClassName="formModal">
+            <Modal show={showForm} onHide={handleTripForm} onExit={() => setErrorMsg(null)} dialogClassName="formModal">
                 {
-                    errorMsg ? 
+                    errorMsg !== null ? 
                     <Alert
                         variant='danger'
                         onClose={() => setErrorMsg(null)}

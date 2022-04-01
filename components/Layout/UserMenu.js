@@ -47,13 +47,13 @@ function UserMenu(user) {
     const submitAccountForm = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
-        updateAccount(username, email, setErrorMsg);
+        updateAccount(username, email, setErrorMsg, handleAccountModal);
     }
 
     const submitPasswordForm = async (e) => {
         e.preventDefault();
         setErrorMsg(null);
-        updatePassword(prevPassword, newPassword, confirmNewPassword, setErrorMsg);
+        updatePassword(prevPassword, newPassword, confirmNewPassword, setErrorMsg, handlePasswordModal);
     }
 
     return ( 

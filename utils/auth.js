@@ -7,7 +7,7 @@ import cookie from "js-cookie";
 export const registerUser = async (user, setError, handleShowSignUp) => {
     try {
         const res = await axios.post(`${baseUrl}/api/signup/`, user);
-        handleShowSignUp(true);
+        handleShowSignUp();
         setToken(res.data);
     } catch (err) {
         const errors = catchErrors(err);
@@ -18,7 +18,7 @@ export const registerUser = async (user, setError, handleShowSignUp) => {
 export const loginUser = async (user, setError, handleShowLogin) => {
     try {
         const res = await axios.post(`${baseUrl}/api/auth/`, {email: user.email, password: user.password});
-        handleShowLogin(true);
+        handleShowLogin();
         setToken(res.data);
     } catch (err) {
         const errors = catchErrors(err);
@@ -27,9 +27,10 @@ export const loginUser = async (user, setError, handleShowLogin) => {
     }
 }
 
-export const updateAccount = async (username, email, setError) => {
+export const updateAccount = async (username, email, setError, handleAccountModal) => {
     try {
         const res = await axios.put(`${baseUrl}/api/user/`, {username: username, email: email}, { headers: { "token":  cookie.get("token") } });
+        handleAccountModal();
         if (res) window.alert("Update successful!")
     }
     catch (err) {
@@ -40,9 +41,10 @@ export const updateAccount = async (username, email, setError) => {
 }
 
 
-export const updatePassword = async (prevPassword, newPassword, confirmNewPassword, setError) => {
+export const updatePassword = async (prevPassword, newPassword, confirmNewPassword, setError, handlePasswordModal) => {
     try {
         const res = await axios.put(`${baseUrl}/api/user/password/`, {prevPassword: prevPassword, newPassword: newPassword, confirmNewPassword: confirmNewPassword}, { headers: { "token":  cookie.get("token") } });
+        handlePasswordModal();
         if (res) window.alert("Password change successful!")
     }
     catch (err) {
