@@ -26,7 +26,7 @@ Router.post(
         // Check if there are any invalid inputs
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() })
+            return res.status(400).json(errors.array())
         }
 
         // Store request values into callable variables
